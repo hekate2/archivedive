@@ -3,3 +3,7 @@ body {
   color: lime;
   margin: 0;
 }
+
+.wiggle span {
+  position: relative;
+}

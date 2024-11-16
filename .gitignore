@@ -1,10 +1,7 @@
 ################### PYTHON
 
-# Venv stufff
-/Lib
-/Include
-/Scripts
-pyvenv.cfg
+# pyterrier index
+/search/index
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

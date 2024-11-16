@@ -1,13 +1,27 @@
 <script>
+  import { onMount } from 'svelte';
   import { SearchBar } from "$lib";
+  import { bounceDat } from "$lib";
 
   let query = "";
+
+  /**
+     * @type {HTMLParagraphElement}
+     */
+  let tagLine;
+
+  onMount(() => {
+		bounceDat(tagLine);
+	});
 </script>
 
 <main>
   <div id="logotype">
     <h1>ArchiveDive</h1>
-    <p class="bounce">Search like it's 1999</p>
+    <p class="wiggle" bind:this={tagLine}>
+      <span></span>
+      Search like it's 1999
+    </p>
   </div>
   <div id="search">
     <SearchBar bind:query />
@@ -16,8 +30,8 @@
       <button id="lucky-btn">I'm feeling lucky!</button>
     </div>
   </div>
-  <p>
-    <small>&copy; I made this in 2024</small>
+  <p id="credit">
+    <small>&copy; <a href="https://github.com/hekate2">I made this</a> in 2024</small>
   </p>
 </main>
 
@@ -36,6 +50,10 @@
     color: crimson;
     font-weight: normal;
     font-size: 45px;
+  }
+
+  #credit a {
+    color: lime;
   }
 
   #logotype h1,
