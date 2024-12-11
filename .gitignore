@@ -1,4 +1,8 @@
 ################### PYTHON
+# databases
+*.db
+scrapelist.txt
+archived.txt
 
 # pyterrier index
 /search/index
