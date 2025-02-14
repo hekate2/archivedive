@@ -1,6 +1,6 @@
 from flask import Flask, request
 import sys
-from ..run_search import search_for_query
+from run_search import search_for_query
 import sqlite3
 import os
 from flask_cors import CORS, cross_origin
@@ -12,10 +12,9 @@ cors = CORS(app) # allow CORS for all domains on all routes.
 
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return "Hello, World!", 200
 
 @app.route("/search")
 def search_route():
@@ -44,3 +43,5 @@ def search_route():
       rows = cursor.fetchall()
 
     return rows
+
+app.run(host='0.0.0.0', port=5000)
