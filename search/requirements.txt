@@ -1,0 +1,12 @@
+archivenow==2020.7.18.12.19.44
+beautifulsoup4==4.13.3
+Flask==3.1.0
+Flask_Cors==5.0.0
+keyword_spacy==0.1.2
+openai==1.63.0
+pandas==2.2.3
+python-dotenv==1.0.1
+python_terrier==0.12.0
+Requests==2.32.3
+spacy==3.8.2
+yaspin==3.1.0
