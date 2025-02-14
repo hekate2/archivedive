@@ -13,6 +13,10 @@
   onMount(() => {
 		bounceDat(tagLine);
 	});
+
+  function makeSearch() {
+    window.location.assign(`/search?q=${query}`);
+  }
 </script>
 
 <main>
@@ -26,7 +30,7 @@
   <div id="search">
     <SearchBar bind:query />
     <div id="search-btns">
-      <button id="search-btn">Search</button>
+      <button id="search-btn" on:click={makeSearch}>Search</button>
       <button id="lucky-btn">I'm feeling lucky!</button>
     </div>
   </div>

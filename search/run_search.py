@@ -1,8 +1,12 @@
 import pyterrier as pt # type: ignore
 import pandas as pd # type: ignore
 import sqlite3
+import os
 
-conn = sqlite3.connect('data/sites.db')
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+# print(dir_path + "\data\sites.db")
+conn = sqlite3.connect(dir_path + "\data\sites.db")
 
 if not pt.java.started():
   pt.java.set_java_home("C:/Program Files/Java/jdk-23") # TODO: Figure out why it's not working when I add to path.
@@ -21,14 +25,19 @@ index_ref = indexer.index(df.to_dict(orient="records"))
 
 searcher = pt.terrier.Retriever(index_ref, wmodel="BM25")
 
-query = None
+# query = None
 
-while query != "exit":
-  query = input('Search term:')
+# while query != "exit":
+#   query = input('Search term:')
 
-  # Run the search
-  results = searcher.search(query)
-  print(f"Search results for query: '{query}'")
-  print(results[['docno', 'score']])
+#   # Run the search
+#   results = searcher.search(query)
+#   print(f"Search results for query: '{query}'")
+#   print(results[['docno', 'score']])
 
 conn.close()
+
+def search_for_query(query):
+  results = searcher.search(query)
+
+  return results.to_dict()

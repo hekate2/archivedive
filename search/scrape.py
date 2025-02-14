@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 import sqlite3
 from archivenow import archivenow
 import time
+from yaspin import yaspin
+from yaspin.spinners import Spinners
 
 load_dotenv()
 
@@ -29,16 +31,22 @@ def main():
 
     for url in sites_to_archive:
       # TODO: start spinner
-      try:
-        if url not in indexed_sites:
-          # scrape_site(url, url not in archived_sites)
-          scrape_site(url, False)
-          time.sleep(5) # delay to not overload internet archive servers TODO: update to 15 when generating archive links
-        else:
-          print(f"URL {url} is already archived- skipping")
-      except Exception as e:
-        print(e)
-        print(f"This site ({url}) couldn't be archived :-(")
+      with yaspin(Spinners.earth, text=f"Indexing: {url}") as spinner:
+        try:
+          if url not in indexed_sites:
+            # scrape_site(url, url not in archived_sites)
+            scrape_site(url, False)
+            spinner.ok("✅ ")
+
+            indexed_sites.append(url)
+            time.sleep(5) # delay to not overload internet archive servers TODO: update to 15 when generating archive links
+          else:
+            spinner.ok("✅ ")
+            print(f"URL {url} is already archived- skipping")
+
+        except Exception as e:
+          spinner.fail("❌ ")
+          print(e)
 
       # stop spinner
 
@@ -131,7 +139,7 @@ def get_summary(text):
           },
           {
             "role": "user",
-            "content": text
+            "content": text[:7000] if len(text) > 7000 else text
           }
         ]
 
@@ -141,7 +149,9 @@ def get_summary(text):
     response.raise_for_status()
     res = response.json()
     return res["choices"][0]["message"]["content"]
-  except:
+  except Exception as e:
+    print(e)
+    print("Couldn't generate summary :-/")
     return None
 
 def scrape_site(url, archive=False):
@@ -157,8 +167,8 @@ def scrape_site(url, archive=False):
   page_body = html.select("body")
 
   if not page_body:
-    print(f"No <body> found for URL: {url}")
-    return  # Skip processing this site
+    # Skip processing this site
+    raise Exception(f"No <body> found for URL: {url}")
 
   page_text = process_raw_text(page_body[0].get_text().lower())
 

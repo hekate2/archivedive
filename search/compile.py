@@ -4,17 +4,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-max_pages = 12
+max_pages = 10
 
 def main():
-  query = "buffy and spike"
+  query = "shoegaze" # I haven't searched for this yet
   next_page = 0
-
   num_requests = 0
 
-  while isinstance(next_page, int) and next_page >= 0 and num_requests < max_pages:
+  while next_page is not None and num_requests < max_pages:
     next_page = request_urls(query, next_page)
     num_requests += 1
+
+  print(f"Successfully compiled {num_requests * 10} results!")
 
 def request_urls(query, start):
   try:
@@ -29,13 +30,11 @@ def request_urls(query, start):
     processed_urls = [i["link"] for i in res["items"]]
 
     with open("data/scrapelist.txt", "a") as my_file:
-      if start != 0:
-        my_file.write("\n")
-
+      my_file.write("\n")
       my_file.write("\n".join(processed_urls))
 
-    if not has_next_page:
-      return -1
+    if not has_next_page or res["queries"]["nextPage"][0]["startIndex"] > 100:
+      return None
 
     return res["queries"]["nextPage"][0]["startIndex"]
 
