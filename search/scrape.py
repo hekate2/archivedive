@@ -13,6 +13,7 @@ from archivenow import archivenow
 import time
 from yaspin import yaspin
 from yaspin.spinners import Spinners
+from collections import deque
 
 load_dotenv()
 
@@ -22,39 +23,62 @@ stop_words = STOP_WORDS.union({"like", "know"})
 # keyword extractor setup
 nlp = spacy.load("en_core_web_md")
 nlp.add_pipe("keyword_extractor", last=True, config={"top_n": 10})
+req_session = requests.Session()
 
 def main():
-  try:
-    archived_sites = load_archived() # indexed sites that have been successfully archived
-    indexed_sites = load_indexed() # sites that are in the db but might not have been archived
-    sites_to_archive = load_list() # sites that are on the list to be added
+    try:
+        url_queue = deque(load_list())  # Convert to deque for fast pop from front
+        cons_err_count = 0
 
-    for url in sites_to_archive:
-      # TODO: start spinner
-      with yaspin(Spinners.earth, text=f"Indexing: {url}") as spinner:
-        try:
-          if url not in indexed_sites:
-            # scrape_site(url, url not in archived_sites)
-            scrape_site(url, False)
-            spinner.ok("✅ ")
+        while url_queue:  # Keep processing while there are URLs left in the queue
+            url = url_queue.popleft()  # Get the next URL to process
 
-            indexed_sites.append(url)
-            time.sleep(5) # delay to not overload internet archive servers TODO: update to 15 when generating archive links
-          else:
-            spinner.ok("✅ ")
-            print(f"URL {url} is already archived- skipping")
+            with yaspin(Spinners.earth, text=f"Indexing: {url}") as spinner:
+                try:
+                    if not is_url_indexed(url):  # Check if the URL is indexed in the database
+                        scrape_site(url, False)  # Scrape the site if it's not indexed
+                        spinner.ok("✅ ")
+                        cons_err_count = 0
+                        time.sleep(10)  # Delay to stay within archive limits
+                    else:
+                        spinner.ok("✅ ")
+                        cons_err_count = 0
+                        print(f"URL {url} is already archived - skipping")
 
-        except Exception as e:
-          spinner.fail("❌ ")
-          print(e)
+                except Exception as e:
+                    spinner.fail("❌ ")
+                    print(f"Error processing {url}: {e}")
+                    cons_err_count = cons_err_count + 1
 
-      # stop spinner
+                    if cons_err_count > 10:
+                       print("Encountered more than 10 consecutive errors- aborting!")
+                       req_session.close()
+                       break
+                    # Optionally, you can re-add the URL to the queue if you'd like to retry it later
+                    # url_queue.append(url)  # Uncomment this line if you want to retry failed URLs
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        print("Something went wrong, no sites were scraped.")
+        req_session.close()
 
 
+def is_url_indexed(url):
+  conn = sqlite3.connect("data/sites.db")
+  cursor = conn.cursor()
 
-  except Exception as e:
-    print(e)
-    print("blah something went wrong and no sites could be scraped.")
+  query = "SELECT * FROM sites WHERE url LIKE ?"
+  urltest = url
+
+  if len(url) > 24 and url[:24] == "https://web.archive.org/":
+     urltest = f"%{url[46:]}%"
+
+  cursor.execute(query, (urltest,))
+  result = cursor.fetchone()
+
+  conn.close()
+
+  return result is not None
 
 def load_indexed():
   """
@@ -125,7 +149,7 @@ def get_summary(text):
   Writes a little summary about the website
   """
   try:
-    response = requests.post(
+    response = req_session.post(
       url="https://openrouter.ai/api/v1/chat/completions",
       headers={
         "Authorization": f"Bearer {os.getenv('OPENROUTER_KEY')}"
@@ -150,7 +174,7 @@ def get_summary(text):
     res = response.json()
     return res["choices"][0]["message"]["content"]
   except Exception as e:
-    print(e)
+    print(f"ERROR: {e}")
     print("Couldn't generate summary :-/")
     return None
 
@@ -159,7 +183,8 @@ def scrape_site(url, archive=False):
   Gets the website content, generates informatioin about it and sticks it into
   a database
   """
-  data = requests.get(url)
+  data = req_session.get(url)
+  # print status
   data.raise_for_status()
 
   html = BeautifulSoup(data.text, 'html.parser')
@@ -170,7 +195,7 @@ def scrape_site(url, archive=False):
     # Skip processing this site
     raise Exception(f"No <body> found for URL: {url}")
 
-  page_text = process_raw_text(page_body[0].get_text().lower())
+  page_text = process_raw_text(page_body[0].get_text().lower())[:1600]
 
   tags = get_keywords(page_text)
   summary = get_summary(page_text) if len(page_text) > 50 else "No summary available"
