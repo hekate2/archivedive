@@ -18,7 +18,11 @@ The back-end files can be found in the `search` folder.  In order to run these y
 ```
 pip install -r requirements.txt
 ```
-Then, to run the server just run `TODO: update with setup instructions when I create a flask server`
+Then, to run the server just run
+```
+python main.py
+```
+from the `/search` folder
 
 ## Not Included:
 To get stuff working you'll have to create a few files:

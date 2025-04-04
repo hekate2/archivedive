@@ -25,19 +25,9 @@ index_ref = indexer.index(df.to_dict(orient="records"))
 
 searcher = pt.terrier.Retriever(index_ref, wmodel="BM25")
 
-# query = None
-
-# while query != "exit":
-#   query = input('Search term:')
-
-#   # Run the search
-#   results = searcher.search(query)
-#   print(f"Search results for query: '{query}'")
-#   print(results[['docno', 'score']])
-
 conn.close()
 
 def search_for_query(query):
   results = searcher.search(query)
 
-  return results.to_dict()
+  return results.to_dict(orient="records")
