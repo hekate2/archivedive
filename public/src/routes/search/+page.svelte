@@ -1,37 +1,56 @@
 <script>
-// @ts-nocheck
-
+  // @ts-nocheck
   import { onMount } from "svelte";
   import { page } from '$app/stores';
-    import { pushState } from "$app/navigation";
+  import { pushState } from "$app/navigation";
 
-  // Fetch query from URL params
-  let q = $page.url.searchParams.get('q');
+  let q = $page.url.searchParams.get('q') || '';
+  let p = 0;
   let searchresults = [];
   let searchTime = 0;
+  let totalResults = 0;
+
+  const cache = new Map(); // key: `${query}_${page}`, value: { data, time, total }
 
   onMount(() => {
-    search(q);
+    if (q) search(q, p);
   });
 
-  // @ts-ignore
-  async function search(query) {
+  async function search(query, pg = 0) {
     try {
       if (!query || query.length === 0) {
         throw new Error("No search query provided");
       }
 
-      // TODO: loading
+      const cacheKey = `${query}_${pg}`;
+      if (cache.has(cacheKey)) {
+        const cached = cache.get(cacheKey);
+        searchresults = cached.data;
+        searchTime = cached.time;
+        totalResults = cached.total;
+        p = pg;
+        return;
+      }
 
-      let startTime = Date.now();
-      let res = await fetch(`http://127.0.0.1:5000/search?q=${query}`);
-
+      const startTime = Date.now();
+      const res = await fetch(`http://localhost:5000/search?q=${encodeURIComponent(query)}&p=${pg}`);
       if (!res.ok) {
         throw new Error(await res.text());
       }
 
-      searchresults = await res.json();
-      searchTime = Date.now() - startTime;
+      const json = await res.json();
+      const elapsedTime = Date.now() - startTime;
+
+      searchresults = json.results;
+      totalResults = json.num_results;
+      searchTime = elapsedTime;
+      p = pg;
+
+      cache.set(cacheKey, {
+        data: json.results,
+        time: elapsedTime,
+        total: json.num_results
+      });
 
       const url = new URL(window.location.href);
       url.searchParams.set('q', query);
@@ -47,11 +66,16 @@
     <a href="/">
       <h1>AD</h1>
     </a>
-    <input type="text" placeholder="Enter a search query" bind:value={q} />
+    <input
+      type="text"
+      placeholder="Enter a search query"
+      bind:value={q}
+      on:keydown={(e) => e.key === 'Enter' && search(q, 0)}
+    />
     <button id="search-button" on:click={() => search(q)}>Search!</button>
   </div>
   {#if searchresults.length > 0}
-    <p id="results-count">{searchresults.length} results found in {searchTime}ms</p>
+    <p id="results-count">{totalResults} results found in {searchTime}ms</p>
     <ul id="results">
       {#each searchresults as result}
         <li class="result">
@@ -61,6 +85,8 @@
         </li>
       {/each}
     </ul>
+    <button on:click={() => search(q, p - 1)} disabled={p <= 0}>Previous Page</button>
+    <button on:click={() => search(q, p + 1)}>Next Page</button>
   {:else}
     <p>No results found.</p>
   {/if}

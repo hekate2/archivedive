@@ -19,7 +19,7 @@ def hello_world():
 @app.route("/search")
 def search_route():
     query = request.args.get('q')
-    start = int(request.args.get('start', 0))  # Default: start at result 0
+    start = int(request.args.get('p', 0))  # Default: start at result 0
     num_results = int(request.args.get('num_results', 10))  # Default: return 10 results
 
     if not query:
@@ -28,11 +28,8 @@ def search_route():
     search_results = search_for_query(query)  # Fetch all matching document IDs
 
     if not search_results:
-        return {"results": [], "start": start, "num_results": num_results}
+        return {"results": [], "num_results": num_results}
 
-    print(search_results)
-    print(start)
-    print(num_results)
     # Apply pagination BEFORE fetching from the database
     paginated_results = search_results[start:start + num_results]
 
@@ -49,8 +46,7 @@ def search_route():
         cursor.execute(sql, result_ids)
         rows = cursor.fetchall()
 
-    return rows
-    # return {"results": rows, "start": start, "num_results": num_results, "total_matches": len(search_results)}
+    return {"results": rows, "num_results": len(search_results)}
 
 # # TODO: pagination, and figure out what the heck is going on with the queries (why returning bad matches?)
 # @app.route("/search")
