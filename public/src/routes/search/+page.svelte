@@ -5,7 +5,7 @@
   import { pushState } from "$app/navigation";
 
   let q = $page.url.searchParams.get('q') || '';
-  let p = 0;
+  let p = $page.url.searchParams.get('q') || '';
   let searchresults = [];
   let searchTime = 0;
   let totalResults = 0;
@@ -33,7 +33,7 @@
       }
 
       const startTime = Date.now();
-      const res = await fetch(`http://localhost:5000/search?q=${encodeURIComponent(query)}&p=${pg}`);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&p=${pg}`);
       if (!res.ok) {
         throw new Error(await res.text());
       }
@@ -72,7 +72,7 @@
       bind:value={q}
       on:keydown={(e) => e.key === 'Enter' && search(q, 0)}
     />
-    <button id="search-button" on:click={() => search(q)}>Search!</button>
+    <button id="search-ifbutton" on:click={() => search(q)}>Search!</button>
   </div>
   {#if searchresults.length > 0}
     <p id="results-count">{totalResults} results found in {searchTime}ms</p>
@@ -85,8 +85,30 @@
         </li>
       {/each}
     </ul>
-    <button on:click={() => search(q, p - 1)} disabled={p <= 0}>Previous Page</button>
-    <button on:click={() => search(q, p + 1)}>Next Page</button>
+    <div id="button-holder">
+      <button on:click={() => search(q, p - 1)} disabled={p <= 0}>Previous Page</button>
+      <div id="chronology">
+        {#if p > 1}
+          <a href={`search?q=${q}&p=${p - 2}`}>{p - 2}</a>
+        {/if}
+        {#if p > 0}
+          <a href={`search?q=${q}&p=${p - 1}`}>{p - 1}</a>
+        {/if}
+        <p id="current-pg">{p}</p>
+        {#if totalResults > 10}
+          {#if p == 0}
+            <a href={`search?q=${q}&p=${p + 1}`}>{p + 1}</a>
+            <a href={`search?q=${q}&p=${p + 2}`}>{p + 2}</a>
+          {/if}
+          {#if p == 1}
+            <a href={`search?q=${q}&p=${p + 1}`}>{p + 1}</a>
+          {/if}
+          <p>...</p>
+          <a href={`search?q=${q}&p=${Math.floor(totalResults / 10)}`}>{Math.floor(totalResults / 10)}</a>
+        {/if}
+      </div>
+      <button on:click={() => search(q, p + 1)} disabled={(p + 1) * 10 >= totalResults}>Next Page</button>
+    </div>
   {:else}
     <p>No results found.</p>
   {/if}
@@ -98,8 +120,42 @@
     margin: 0 auto;
   }
 
+  #button-holder {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 100px;
+    align-items: center;
+  }
+
+  #button-holder button {
+    margin: 0 2px;
+  }
+
   #search-bar a {
     text-decoration: none;
+  }
+
+  #chronology {
+    display: flex;
+    align-items: center;
+  }
+
+  #chronology a {
+    color: var(--text-primary)
+  }
+
+  #chronology a:not(:last-of-type):after,
+  #current-pg::after {
+    content: ", ";
+  }
+
+  #current-pg {
+    font-weight: bold;
+  }
+
+  #chronology a,
+  #chronology p {
+    margin-left: 5px;
   }
 
   h1 {
@@ -129,12 +185,20 @@
     margin-right: 10px;
   }
 
-  #search-button {
-    background-color: chartreuse;
-    padding: 5px;
-    color: black;
-    border: 3px outset chartreuse;
+  button {
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    border: 1px solid;
+    padding: 5px 10px;
     cursor: pointer;
+  }
+
+  button:hover {
+    color: white;
+  }
+
+  button:disabled {
+    opacity: 25%;
   }
 
   #results-count {

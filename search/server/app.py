@@ -30,8 +30,9 @@ def search_route():
     if not search_results:
         return {"results": [], "num_results": num_results}
 
+    print(search_results)
     # Apply pagination BEFORE fetching from the database
-    paginated_results = search_results[start:start + num_results]
+    paginated_results = search_results[(start * num_results):(start * num_results) + num_results]
 
     result_ids = [str(doc["docno"]) for doc in paginated_results]
 
@@ -47,34 +48,5 @@ def search_route():
         rows = cursor.fetchall()
 
     return {"results": rows, "num_results": len(search_results)}
-
-# # TODO: pagination, and figure out what the heck is going on with the queries (why returning bad matches?)
-# @app.route("/search")
-# def search_route():
-#     query = request.args.get('q')
-
-#     if not query:
-#       return "Please provide a search query", 400
-
-#     search = search_for_query(query)
-
-#     if len(search["docid"].values()) == 0:
-#        return []
-
-#     result_ids = [str(i) for i in search["docid"].values()]
-
-#     placeholders = " OR ".join(["id=?" for _ in result_ids])
-#     sql = f"SELECT title, url, summary FROM sites WHERE {placeholders}"
-
-#     print(result_ids)
-
-
-#     rows = []
-#     with sqlite3.connect(dir_path + "\\..\\data\\sites.db") as conn:
-#       cursor = conn.cursor()
-#       cursor.execute(sql, list(result_ids))
-#       rows = cursor.fetchall()
-
-#     return rows
 
 app.run(host='0.0.0.0', port=5000)
