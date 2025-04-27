@@ -8,11 +8,6 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 # print(dir_path + "\data\sites.db")
 conn = sqlite3.connect(dir_path + "\data\sites.db")
 
-# if not pt.java.started():
-#   print("Here")
-#   pt.java.set_java_home("C:/Program Files/Java/jdk-23") # TODO: Figure out why it's not working when I add to path.
-#   pt.java.init()
-
 df = pd.read_sql_query("""
     SELECT
         id AS docno,
