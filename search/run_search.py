@@ -19,8 +19,10 @@ df = pd.read_sql_query("""
     FROM sites
   """, conn, dtype={'docno': 'string'})
 
-# df = pd.DataFrame(documents)
-indexer = pt.IterDictIndexer("C:/Users/wretc/Documents/Websites/archivedive/search/index", overwrite=True)
+dir_path = os.path.dirname(os.path.realpath(__file__))
+index_path = os.path.join(dir_path, "index")
+indexer = pt.IterDictIndexer(index_path, overwrite=True)
+
 index_ref = indexer.index(df.to_dict(orient="records"))
 
 searcher = pt.terrier.Retriever(index_ref, wmodel="BM25")
