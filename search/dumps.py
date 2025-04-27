@@ -1,8 +1,14 @@
 import sqlite3
 import csv
+import os
 
-db_filename = "data/sites.db"
-csv_filename = "data/sites.csv"
+dir_path = os.path.dirname(os.path.realpath(__file__))
+csv_filename = os.path.join(dir_path, "data", "sites.csv")
+db_filename = os.path.join(dir_path, "data", "sites.db")
+
+# db_filename = "data/sites.db"
+# csv_filename = "data/sites.csv"
+
 
 def dump_data():
   conn = sqlite3.connect(db_filename)
@@ -44,3 +50,6 @@ def dump_data():
   conn.close()
 
   print(f"Data from {csv_filename} has been imported into {db_filename}.")
+
+if __name__ == "__main__":
+  dump_data()
