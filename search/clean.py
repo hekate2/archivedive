@@ -1,7 +1,9 @@
 import re
+import os
 import sqlite3
 
-db_path = 'data/sites.db'
+dir_path = os.path.dirname(os.path.realpath(__file__))
+db_path = os.path.join(dir_path, "data", "sites.db")
 
 def main():
   clean_up_sites(db_path)

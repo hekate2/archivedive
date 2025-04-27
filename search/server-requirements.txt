@@ -9,6 +9,7 @@ colorama==0.4.6
 Deprecated==1.2.18
 dill==0.4.0
 Flask==3.1.0
+flask-cors==5.0.1
 HeapDict==1.0.1
 idna==3.10
 ijson==3.3.0
