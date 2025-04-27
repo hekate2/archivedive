@@ -16,6 +16,9 @@ df = pd.read_sql_query("""
     FROM sites
   """, conn, dtype={'docno': 'string'})
 
+# if not pt.java.started():
+#   pt.java.set_java_home("/usr/lib/jvm/default-java")
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 index_path = os.path.join(dir_path, "index")
 indexer = pt.IterDictIndexer(index_path, overwrite=True)
