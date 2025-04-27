@@ -1,4 +1,3 @@
-# TODO: delete `index` folder
 import shutil
 import os
 
@@ -10,5 +9,7 @@ if os.path.exists(index_folder):
     print("Deleted 'index' folder.")
 else:
     print("'index' folder does not exist.")
+
+os.makedirs(index_folder, exist_ok=True)
 
 import server.app

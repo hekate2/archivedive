@@ -48,4 +48,4 @@ def search_route():
 
     return {"results": rows, "num_results": len(search_results)}
 
-# app.run(host='0.0.0.0', port=5000)
+app.run(host='0.0.0.0', port=5000)
