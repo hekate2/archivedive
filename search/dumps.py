@@ -1,7 +1,7 @@
 import sqlite3
 import csv
 
-db_filename = "data/sites-copy.db"
+db_filename = "data/sites.db"
 csv_filename = "data/sites.csv"
 
 conn = sqlite3.connect(db_filename)
