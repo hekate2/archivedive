@@ -1,9 +1,8 @@
 from flask import Flask, request
-import sys
 from run_search import search_for_query
 import sqlite3
 import os
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -49,4 +48,4 @@ def search_route():
 
     return {"results": rows, "num_results": len(search_results)}
 
-app.run(host='0.0.0.0', port=5000)
+# app.run(host='0.0.0.0', port=5000)

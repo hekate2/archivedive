@@ -10,7 +10,7 @@ ArchiveDive is a search engine which both searches and archives older websites c
 ## Try it out yourself
 To run archivedive locally, first clone this repo, then run the front-end and back-end seperately.
 
-The front-end files can be found in the `public` folder.  After navigating to it on the command line, run:
+The front-end files can be found in the `client` folder.  After navigating to it on the command line, run:
 ```
 npm run dev
 ```
