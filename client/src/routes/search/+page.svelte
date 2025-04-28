@@ -1,11 +1,11 @@
 <script>
   // @ts-nocheck
-  import { onMount } from "svelte";
+  import { onMount, beforeUpdate } from "svelte";
   import { page } from '$app/stores';
   import { pushState } from "$app/navigation";
 
-  let q = $page.url.searchParams.get('q') || '';
-  let p = $page.url.searchParams.get('q') || '';
+  let q = '';
+  let p = 0;
   let searchresults = [];
   let searchTime = 0;
   let totalResults = 0;
@@ -13,10 +13,14 @@
   const cache = new Map(); // key: `${query}_${page}`, value: { data, time, total }
 
   onMount(() => {
+    const params = new URLSearchParams(window.location.search);
+    q = params.get('q') || '';
+
     if (q) search(q, p);
   });
 
   async function search(query, pg = 0) {
+    console.log("searching")
     try {
       if (!query || query.length === 0) {
         throw new Error("No search query provided");
@@ -88,24 +92,7 @@
     <div id="button-holder">
       <button on:click={() => search(q, p - 1)} disabled={p <= 0}>Previous Page</button>
       <div id="chronology">
-        {#if p > 1}
-          <a href={`search?q=${q}&p=${p - 2}`}>{p - 2}</a>
-        {/if}
-        {#if p > 0}
-          <a href={`search?q=${q}&p=${p - 1}`}>{p - 1}</a>
-        {/if}
-        <p id="current-pg">{p}</p>
-        {#if totalResults > 10}
-          {#if p == 0}
-            <a href={`search?q=${q}&p=${p + 1}`}>{p + 1}</a>
-            <a href={`search?q=${q}&p=${p + 2}`}>{p + 2}</a>
-          {/if}
-          {#if p == 1}
-            <a href={`search?q=${q}&p=${p + 1}`}>{p + 1}</a>
-          {/if}
-          <p>...</p>
-          <a href={`search?q=${q}&p=${Math.floor(totalResults / 10)}`}>{Math.floor(totalResults / 10)}</a>
-        {/if}
+        <p id="current-pg">{p + 1}/{Math.floor(totalResults / 10)}</p>
       </div>
       <button on:click={() => search(q, p + 1)} disabled={(p + 1) * 10 >= totalResults}>Next Page</button>
     </div>
@@ -144,13 +131,12 @@
     color: var(--text-primary)
   }
 
-  #chronology a:not(:last-of-type):after,
-  #current-pg::after {
-    content: ", ";
-  }
-
   #current-pg {
     font-weight: bold;
+  }
+
+  #chronology {
+    color: var(--text-primary)
   }
 
   #chronology a,

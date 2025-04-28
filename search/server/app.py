@@ -3,6 +3,7 @@ from run_search import search_for_query
 import sqlite3
 import os
 from flask_cors import CORS
+from waitress import serve
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -11,15 +12,22 @@ cors = CORS(app) # allow CORS for all domains on all routes.
 
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+def get_int_arg(val, default):
+    try:
+        return int(val)
+    except (TypeError, ValueError):
+        return default
+
 @app.route("/")
 def hello_world():
     return "Hello, World!", 200
 
 @app.route("/search")
 def search_route():
+    print(request.args.get('p'))
     query = request.args.get('q')
-    start = int(request.args.get('p', 0))  # Default: start at result 0
-    num_results = int(request.args.get('num_results', 10))  # Default: return 10 results
+    start = get_int_arg(request.args.get('p'), 0)
+    num_results = get_int_arg(request.args.get('num_results'), 10)
 
     if not query:
         return "Please provide a search query", 400
@@ -29,7 +37,6 @@ def search_route():
     if not search_results:
         return {"results": [], "num_results": num_results}
 
-    print(search_results)
     # Apply pagination BEFORE fetching from the database
     paginated_results = search_results[(start * num_results):(start * num_results) + num_results]
 
@@ -48,4 +55,6 @@ def search_route():
 
     return {"results": rows, "num_results": len(search_results)}
 
-app.run(host='0.0.0.0', port=5000)
+
+# app.run(host='0.0.0.0', port=5000)
+serve(app, host="0.0.0.0", port=5000)
