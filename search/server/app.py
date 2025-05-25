@@ -22,7 +22,7 @@ def get_int_arg(val, default):
 def hello_world():
     return "Hello, World!", 200
 
-@app.route("/search")
+@app.route("/api/search")
 def search_route():
     print(request.args.get('p'))
     query = request.args.get('q')
@@ -48,7 +48,10 @@ def search_route():
     placeholders = ", ".join(["?"] * len(result_ids))
     sql = f"SELECT title, url, summary FROM sites WHERE id IN ({placeholders})"
 
-    with sqlite3.connect(dir_path + "\\..\\data\\sites.db") as conn:
+    print("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+    print(dir_path + "/../data/sites.db")
+
+    with sqlite3.connect(dir_path + "/../data/sites.db") as conn:
         cursor = conn.cursor()
         cursor.execute(sql, result_ids)
         rows = cursor.fetchall()

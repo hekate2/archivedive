@@ -9,7 +9,6 @@ db_filename = os.path.join(dir_path, "data", "sites.db")
 # db_filename = "data/sites.db"
 # csv_filename = "data/sites.csv"
 
-
 def dump_data():
   conn = sqlite3.connect(db_filename)
   cursor = conn.cursor()

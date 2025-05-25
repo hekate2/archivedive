@@ -6,6 +6,8 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 db_path = os.path.join(dir_path, "data", "sites.db")
 
+print("BD PATH: " + db_path)
+
 # print(dir_path + "\data\sites.db")
 conn = sqlite3.connect(db_path)
 
