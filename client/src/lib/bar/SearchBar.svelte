@@ -6,7 +6,7 @@
   // suggests queries
   function completeSuggestions() {
     if (query) {
-      sugg = [`${query} where to buy`, `${query} Seattle`, `What is ${query}`, `When was ${query} in style?`];
+      sugg = [`${query} angelfire`, `What is ${query}`, `${query} geocities`, `Websites about ${query} geocities`];
     }
   }
 

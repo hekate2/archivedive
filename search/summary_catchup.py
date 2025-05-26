@@ -26,6 +26,7 @@ def main():
         try:
           summarize(url)
           spinner.ok("✅ ")
+          time.sleep(10)
         except Exception as e:
           spinner.fail("❌ ")
           print(e)
@@ -44,6 +45,7 @@ def get_no_summary_sites():
   SELECT DISTINCT url
   FROM sites
   WHERE summary IS NULL
+  OR summary = ""
   """
   cursor.execute(query)
 

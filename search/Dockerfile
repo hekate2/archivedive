@@ -18,9 +18,9 @@ RUN pip install -r server-requirements.txt
 
 RUN python3 init
 
-# Tell Docker (and Render) that the app runs on port 5000
+# Tell Docker that the app runs on port 5000
 EXPOSE 5000
 
 # Run your app
-CMD ["python3", "-m", "main"]
+CMD ["python3", "-u", "-m", "main"]
 # CMD ["sh", "-c", "python3 -m init && python3 -u -m main"]

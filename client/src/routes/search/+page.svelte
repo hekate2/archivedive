@@ -38,6 +38,7 @@
 
       const startTime = Date.now();
       const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&p=${pg}`);
+
       if (!res.ok) {
         throw new Error(await res.text());
       }
@@ -92,7 +93,7 @@
     <div id="button-holder">
       <button on:click={() => search(q, p - 1)} disabled={p <= 0}>Previous Page</button>
       <div id="chronology">
-        <p id="current-pg">{p + 1}/{Math.floor(totalResults / 10)}</p>
+        <p id="current-pg">{p + 1}/{Math.max(1, Math.floor(totalResults / 10))}</p>
       </div>
       <button on:click={() => search(q, p + 1)} disabled={(p + 1) * 10 >= totalResults}>Next Page</button>
     </div>
@@ -209,6 +210,9 @@
     color: cornflowerblue;
     font-size: 12px;
     margin: 5px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   #results p {

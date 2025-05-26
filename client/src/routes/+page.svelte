@@ -17,6 +17,23 @@
   function makeSearch() {
     window.location.assign(`/search?q=${query}`);
   }
+
+  async function imFeelingLucky() {
+    try {
+      let res = await fetch(`/api/lucky`);
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+
+      let url = await res.json();
+
+      window.open(url["url"]);
+
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong...");
+    }
+  }
 </script>
 
 <main>
@@ -31,12 +48,15 @@
     <SearchBar bind:query />
     <div id="search-btns">
       <button id="search-btn" on:click={makeSearch}>Search</button>
-      <button id="lucky-btn">I'm feeling lucky!</button>
+      <button id="lucky-btn" on:click={imFeelingLucky}>I'm Feeling Lucky!</button>
     </div>
   </div>
   <p id="credit">
-    <small>&copy; <a href="https://github.com/hekate2">I made this</a> in 2024</small>
+    <small>&copy; <a href="https://hekate.neocities.org">I made this</a> in 2024</small>
   </p>
+  <footer>
+    <p><small>Bugs?  Problems?  Report them <a href="#">here</a></small></p>
+  </footer>
 </main>
 
 <style>
@@ -105,5 +125,10 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+  }
+
+  footer {
+    position: absolute;
+    bottom: 0;
   }
 </style>
