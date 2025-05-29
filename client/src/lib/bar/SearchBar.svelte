@@ -23,7 +23,7 @@
 {#if query.length > 0}
   <ul id="search-sugg-box">
     {#each sugg as suggestion}
-      <li class="suggestion">
+      <li class="suggestion" on:click={() => window.location.assign(`/search?q=${suggestion}`)}>
         {suggestion.split(query)[0]}
         <strong>{query}</strong>
         {suggestion.split(query)[1]}

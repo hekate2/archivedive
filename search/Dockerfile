@@ -16,7 +16,7 @@ COPY . .
 # Install Python dependencies
 RUN pip install -r server-requirements.txt
 
-RUN python3 init
+RUN python3 init.py
 
 # Tell Docker that the app runs on port 5000
 EXPOSE 5000

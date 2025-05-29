@@ -28,6 +28,14 @@ def serve_root():
 def serve_search():
     return send_from_directory(app.static_folder, "search.html")
 
+@app.route("/donate")
+def serve_donate():
+    return send_from_directory(app.static_folder, "donate.html")
+
+@app.route("/about")
+def serve_about():
+    return send_from_directory(app.static_folder, "about.html")
+
 @app.route("/test")
 def hello_world():
     return "Hello, World!", 200
@@ -59,7 +67,7 @@ def search_route():
     search_results = search_for_query(query)  # Fetch all matching document IDs
 
     if not search_results:
-        return {"results": [], "num_results": num_results}
+        return {"results": [], "num_results": 0}
 
     # Apply pagination BEFORE fetching from the database
     paginated_results = search_results[(start * num_results):(start * num_results) + num_results]
@@ -71,9 +79,6 @@ def search_route():
 
     placeholders = ", ".join(["?"] * len(result_ids))
     sql = f"SELECT title, url, summary FROM sites WHERE id IN ({placeholders})"
-
-    print("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-    print(dir_path + "/../data/sites.db")
 
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()

@@ -9,6 +9,7 @@
   let searchresults = [];
   let searchTime = 0;
   let totalResults = 0;
+  let loading = false;
 
   const cache = new Map(); // key: `${query}_${page}`, value: { data, time, total }
 
@@ -25,6 +26,8 @@
       if (!query || query.length === 0) {
         throw new Error("No search query provided");
       }
+
+      loading = true;
 
       const cacheKey = `${query}_${pg}`;
       if (cache.has(cacheKey)) {
@@ -46,6 +49,7 @@
       const json = await res.json();
       const elapsedTime = Date.now() - startTime;
 
+      loading = false;
       searchresults = json.results;
       totalResults = json.num_results;
       searchTime = elapsedTime;
@@ -61,6 +65,7 @@
       url.searchParams.set('q', query);
       pushState(url);
     } catch (err) {
+      loading = false;
       console.error(err);
     }
   }
@@ -97,6 +102,8 @@
       </div>
       <button on:click={() => search(q, p + 1)} disabled={(p + 1) * 10 >= totalResults}>Next Page</button>
     </div>
+  {:else if true}
+    <img src="loading.gif" id="loading" alt="loading icon" />
   {:else}
     <p>No results found.</p>
   {/if}
@@ -123,6 +130,12 @@
     text-decoration: none;
   }
 
+  #results a {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
   #chronology {
     display: flex;
     align-items: center;
@@ -143,6 +156,11 @@
   #chronology a,
   #chronology p {
     margin-left: 5px;
+  }
+
+  #loading {
+    margin: 0 auto;
+    display: block;
   }
 
   h1 {
@@ -210,9 +228,6 @@
     color: cornflowerblue;
     font-size: 12px;
     margin: 5px 0;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
 
   #results p {

@@ -1,5 +1,5 @@
 # ArchiveDive
-Last Update: April 2nd, 2025\
+Last Update: May 26th, 2025\
 Contributors: hekate2
 
 ![Screenshot of ArchiveDive's search page](img/search-screenshot.png)

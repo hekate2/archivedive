@@ -47,7 +47,7 @@
   <div id="search">
     <SearchBar bind:query />
     <div id="search-btns">
-      <button id="search-btn" on:click={makeSearch}>Search</button>
+      <button id="search-btn" disabled={query.length <= 0} on:click={makeSearch}>Search</button>
       <button id="lucky-btn" on:click={imFeelingLucky}>I'm Feeling Lucky!</button>
     </div>
   </div>
@@ -55,11 +55,18 @@
     <small>&copy; <a href="https://hekate.neocities.org">I made this</a> in 2024</small>
   </p>
   <footer>
-    <p><small>Bugs?  Problems?  Report them <a href="#">here</a></small></p>
+    <p>Bugs?  Problems?  Report them <a href="https://github.com/hekate2/archivedive/issues">here</a></p>
+    <p><a href="/about">What even is this thing??</a></p>
+    <p><a href="/donate">Help out w/ hosting costs</a></p>
   </footer>
 </main>
 
 <style>
+
+  footer p {
+    margin: 0;
+  }
+
   #logotype {
     display: flex;
     flex-direction: column;
@@ -125,10 +132,40 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    max-width: 600px;
+    margin: 0 auto;
+    width: calc(100vw - 40px);
   }
 
   footer {
     position: absolute;
     bottom: 0;
+    display: flex;
+    font-size: small;
+    margin: 10px;
+  }
+
+  footer a {
+    color: lime;
+  }
+
+  @media (min-width: 576px) {
+    footer > p:not(:last-of-type)::after {
+      content: "|";
+      margin: 0 5px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    footer {
+      flex-direction: column;
+      width: calc(100vw - 20px);
+      text-align: right;
+      color: grey;
+    }
+
+    footer a {
+      color: grey;
+    }
   }
 </style>

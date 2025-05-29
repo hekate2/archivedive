@@ -6,9 +6,6 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 db_path = os.path.join(dir_path, "data", "sites.db")
 
-print("BD PATH: " + db_path)
-
-# print(dir_path + "\data\sites.db")
 conn = sqlite3.connect(db_path)
 
 df = pd.read_sql_query("""
@@ -17,9 +14,6 @@ df = pd.read_sql_query("""
         tags || ' ' || title || ' ' || summary AS text
     FROM sites
   """, conn, dtype={'docno': 'string'})
-
-# if not pt.java.started():
-#   pt.java.set_java_home("/usr/lib/jvm/default-java")
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 index_path = os.path.join(dir_path, "index")
@@ -33,5 +27,4 @@ conn.close()
 
 def search_for_query(query):
   results = searcher.search(query)
-
   return results.to_dict(orient="records")
