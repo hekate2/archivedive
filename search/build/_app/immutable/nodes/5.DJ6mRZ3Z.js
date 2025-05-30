@@ -1,0 +1,1 @@
+import{a as r,t}from"../chunks/disclose-version.BRXAotLx.js";import"../chunks/legacy.ErBfe9UC.js";var s=t(`<main class="svelte-41kr5l"><h1 class="svelte-41kr5l">BROKEN!!!</h1> <p class="svelte-41kr5l">That page couldn't be found (error 404)</p> <a href=".." id="go-back" class="svelte-41kr5l">Back to Search!</a></main>`);function p(a){var e=s();r(a,e)}export{p as component};

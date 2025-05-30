@@ -11,12 +11,13 @@ index_folder = os.path.join(dir_path, "index")
 print("INDEX FOLDER LOC: " + index_folder)
 
 sites_db = os.path.join(dir_path, "data", "sites.db")
+sites_csv = os.path.join(dir_path, "data", "sites.csv")
 
-if not os.path.exists(sites_db):
-    # Run dump_data() in a separate thread and wait for it
-    thread = threading.Thread(target=dump_data_thread)
-    thread.start()
-    thread.join()
+os.remove(sites_db)
+# Run dump_data() in a separate thread and wait for it
+thread = threading.Thread(target=dump_data_thread)
+thread.start()
+thread.join()
 
 if os.path.exists(index_folder):
     shutil.rmtree(index_folder)

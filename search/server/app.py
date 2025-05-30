@@ -36,6 +36,10 @@ def serve_donate():
 def serve_about():
     return send_from_directory(app.static_folder, "about.html")
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return send_from_directory(app.static_folder, 'not_found.html'), 404
+
 @app.route("/test")
 def hello_world():
     return "Hello, World!", 200
