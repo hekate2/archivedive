@@ -1,0 +1,14 @@
+# remove_empty_lines.py
+
+def remove_empty_lines(input_file, output_file):
+    with open(input_file, 'r') as infile:
+        lines = infile.readlines()
+    
+    non_empty_lines = [line for line in lines if line.strip() != '']
+
+    with open(output_file, 'w') as outfile:
+        outfile.writelines(non_empty_lines)
+
+if __name__ == '__main__':
+    # Change these filenames as needed
+    remove_empty_lines('data/scrapelist.txt', 'data/dumps.txt')

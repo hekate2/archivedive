@@ -16,30 +16,35 @@ max_pages = 10
 archived_urls = set()
 
 def main():
-  search_term = "journal"
-  get_from_gifcities(search_term)
-  # NOTE: When done compiling, don't forget to run remove_top_bar.py
+  search_term = "Backstreet Boys"
+  # get_from_gifcities(search_term)
+  google_api_search(search_term)
 
-def get_from_gifcities(term):
-  try:
-    if not term:
-        raise Exception("Search query required. None currently passed")
+  # NOTE: When done compiling, don't forget to run remove_top_bar.py, but only once!
+  # TODO: make this better (so the top bar is removed by default??)
 
-    url = f"https://gifcities.archive.org/api/v1/gifsearch?q={term}"
 
-    res = requests.get(url)
-    res.raise_for_status()
+# ********************** USES GIFCITIES TO FIND WEBSITES ************************
+# def get_from_gifcities(term):
+#   try:
+#     if not term:
+#         raise Exception("Search query required. None currently passed")
 
-    data = res.json()
+#     url = f"https://gifcities.archive.org/api/v1/gifsearch?q={term}"
 
-    urls = {item['page'] for item in data} # unique-ness
+#     res = requests.get(url)
+#     res.raise_for_status()
 
-    with open("data/scrapelist.txt", "a") as my_file:
-      my_file.write("\n")
-      my_file.write("\n".join(urls))
+#     data = res.json()
 
-  except Exception as e:
-    print(f"An error occurred: {e}")
+#     urls = {item['page'] for item in data} # unique-ness
+
+#     with open("data/scrapelist.txt", "a") as my_file:
+#       my_file.write("\n")
+#       my_file.write("\n".join(urls))
+
+#   except Exception as e:
+#     print(f"An error occurred: {e}")
 
 # *********************** THESE ARE METHODS FOR CRAWLING THRU LINKS FROM ONE PAGE **************
 # def main():
@@ -128,41 +133,40 @@ def get_from_gifcities(term):
 
 #******** OLD METHODS USING GOOGLE SEARCH THAT I'M TOO SCARED TO DELETE ********
 
-# def main():
-#   query = "portishead" # I haven't searched for this yet
-#   next_page = 0
-#   num_requests = 0
+def google_api_search(query):
+  next_page = 0
+  num_requests = 0
 
-#   while next_page is not None and num_requests < max_pages:
-#     next_page = request_urls(query, next_page)
-#     num_requests += 1
+  while next_page is not None and num_requests < max_pages:
+    next_page = request_urls(query, next_page)
+    num_requests += 1
 
-#   print(f"Successfully compiled {num_requests * 10} results!")
+  print(f"Successfully compiled {num_requests * 10} results!")
 
-# def request_urls(query, start):
-#   try:
-#     search_url = f"https://www.googleapis.com/customsearch/v1?key={os.getenv('GOOGLE_KEY')}&cx=b0d824ba798db44fb&q={query}&start={start}"
-#     res = requests.get(search_url)
-#     res.raise_for_status()
+def request_urls(query, start):
+  try:
+    search_url = f"https://www.googleapis.com/customsearch/v1?key={os.getenv('GOOGLE_KEY')}&cx={os.getenv('GOOGLE_CUSTOM_ENGINE_ID')}&q={query}&start={start}"
+    res = requests.get(search_url)
+    res.raise_for_status()
 
-#     res = res.json()
+    res = res.json()
 
-#     has_next_page = "nextPage" in res["queries"]
+    has_next_page = "nextPage" in res["queries"]
 
-#     processed_urls = [i["link"] for i in res["items"]]
+    processed_urls = [i["link"] for i in res["items"]]
 
-#     with open("data/scrapelist.txt", "a") as my_file:
-#       my_file.write("\n")
-#       my_file.write("\n".join(processed_urls))
+    with open("data/scrapelist.txt", "a") as my_file:
+      my_file.write("\n")
+      my_file.write("\n".join(processed_urls))
 
-#     if not has_next_page or res["queries"]["nextPage"][0]["startIndex"] > 100:
-#       return None
+    if not has_next_page or res["queries"]["nextPage"][0]["startIndex"] > 100:
+      return None
 
-#     return res["queries"]["nextPage"][0]["startIndex"]
+    return res["queries"]["nextPage"][0]["startIndex"]
 
-#   except Exception as e:
-#     print(e)
-#     print("Something went wrong :-(")
+  except Exception as e:
+    print(e)
+    print("Something went wrong :-(")
 
 if __name__=="__main__":
   main()
