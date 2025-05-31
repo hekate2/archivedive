@@ -102,7 +102,7 @@
       </div>
       <button on:click={() => search(q, p + 1)} disabled={(p + 1) * 10 >= totalResults}>Next Page</button>
     </div>
-  {:else if true}
+  {:else if loading}
     <img src="loading.gif" id="loading" alt="loading icon" />
   {:else}
     <p>No results found.</p>

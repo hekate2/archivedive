@@ -4,6 +4,7 @@ import sqlite3
 import os
 from flask_cors import CORS
 from waitress import serve
+from prometheus_flask_exporter import PrometheusMetrics
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 db_path = os.path.join(dir_path, "..", "data", "sites.db")
@@ -12,26 +13,48 @@ build_folder = os.path.join(dir_path, "..", "build")
 app = Flask(__name__, static_folder=build_folder, static_url_path="/")
 cors = CORS(app) # allow CORS for all domains on all routes.
 
+# METRICSSSSSS
+metrics = PrometheusMetrics(app)
+
+# Only expose metrics at /metrics
+metrics.export_defaults = False
+
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 def get_int_arg(val, default):
+    """
+    parses an int argument, and if not parseable returns a provided default int value
+    """
     try:
         return int(val)
     except (TypeError, ValueError):
         return default
 
+def is_local_request():
+    """
+    Determines if the request is internal
+    """
+    print(f"ADDR: {request.remote_addr}")
+    print(str(request.remote_addr) == "127.0.0.1")
+
+    return str(request.remote_addr) == "127.0.0.1"
+
+@metrics.do_not_track()
 @app.route("/")
 def serve_root():
     return send_from_directory(app.static_folder, "index.html")
 
+@metrics.do_not_track()
 @app.route("/search")
 def serve_search():
     return send_from_directory(app.static_folder, "search.html")
 
+@metrics.do_not_track()
 @app.route("/donate")
 def serve_donate():
     return send_from_directory(app.static_folder, "donate.html")
 
+@metrics.do_not_track()
 @app.route("/about")
 def serve_about():
     return send_from_directory(app.static_folder, "about.html")
@@ -40,10 +63,12 @@ def serve_about():
 def page_not_found(e):
     return send_from_directory(app.static_folder, 'not_found.html'), 404
 
+@metrics.do_not_track()
 @app.route("/test")
 def hello_world():
     return "Hello, World!", 200
 
+@metrics.do_not_track()
 @app.route("/api/lucky")
 def lucky_route():
     try:
